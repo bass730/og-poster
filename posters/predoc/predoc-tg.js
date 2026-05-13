@@ -40,7 +40,7 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
 
                     console.log('post sent successfully!');
                     await addDocumentToPostedDb(scholarshipObj);
-                    console.log(post)
+                    //console.log(post)
                     console.log('post added to posted-tg-jobs db..');
 
                 } catch (error) {

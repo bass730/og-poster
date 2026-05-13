@@ -203,16 +203,16 @@ async function deleteIfPostedPredocCollectionHasReachedCountThreshold() {
     const count = await collection.estimatedDocumentCount();
 
     if (count >= 3000) {
-      console.log(`🗑️ predoc-posted-scholarships collection has ~${count} documents. Deleting...`);
+      console.log(`🗑️ jobs-ac-scholarships collection has ~${count} documents. Deleting...`);
 
       const result = await collection.deleteMany({}, {
         writeConcern: { w: 1, j: false }
       });
 
-      console.log(`✅ Deleted ${result.deletedCount} documents from predoc-posted-scholarships.`);
+      console.log(`✅ Deleted ${result.deletedCount} documents from jobs-ac-scholarships.`);
       return;
     } else {
-      console.log(`ℹ️ predoc-posted-scholarships has ~${count} documents. No deletion needed.`);
+      console.log(`ℹ️ jobs-ac-scholarships has ~${count} documents. No deletion needed.`);
       return;
     }
 

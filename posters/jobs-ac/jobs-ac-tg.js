@@ -30,7 +30,7 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
 
                     //limit 400 characters if length>400; remove employer
                     post = `<b>FULLY FUNDED PHD POSITION</b>\n\n<b>${scholarshipObj.
-                        post_title}</b>\n\n🔰 <b>Institution:</b> ${scholarshipObj.institution}\n🔰 <b>Deadline:</b> ${scholarshipObj.
+                        post_title}</b>\n\n🔰 <b>Institution:</b> ${scholarshipObj.institution}\n\n🔰 <b>Deadline:</b> ${scholarshipObj.
                         application_deadline}\n\n${scholarshipObj.application_link}`
 
                     await bot.telegram.sendMessage(TELEGRAM_CHANNEL_ID, post, {
@@ -40,7 +40,7 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
 
                     console.log('post sent successfully!');
                     await addDocumentToPostedDb(scholarshipObj);
-                    console.log(post)
+                    //console.log(post)
                     console.log('post added to posted-tg-jobs db..');
 
                 } catch (error) {
