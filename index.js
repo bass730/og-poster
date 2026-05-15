@@ -4,6 +4,7 @@ const cron = require("node-cron");
 const http = require("http");
 const { tg_post_jobs_ac } = require("./posters/jobs-ac/jobs-ac-tg.js");
 const { tg_post_predoc } = require("./posters/predoc/predoc-tg.js");
+const { tg_post_academy } = require("./posters/academy-pos/academy-tg.js");
 const {formatNigerianTime} = require("./utils/dateHelpers.js");
 
 // --- HTTP Server for Health Checks ---
@@ -36,6 +37,7 @@ async function setupCronJobs() {
 let post_schedules = ['0 4 * * *', '50 6 * * *', '15 7 * * *', '32 7 * * *',
    '52 7 * * *', '30 10 * * *', '54 10 * * *', '28 14 * * *', '47 14 * * *', '12 19 * * *', '38 19 * * *', '45 19 * * *'];
 //schedule Jobs-ac - 50 6 * * *, 52 7 * * *, 30 10 * * *,  28 14 * * *, 45 19 * * *
+//schedule predoc - '32 7 * * *'
   post_schedules.forEach(time => {
     if(time === '0 4 * * *') {
         cron.schedule(time, async () => {
@@ -50,7 +52,7 @@ let post_schedules = ['0 4 * * *', '50 6 * * *', '15 7 * * *', '32 7 * * *',
     } else if (time === '52 7 * * *') {
       cron.schedule(time, async () => {
         console.log('executing jobs_ac fn..');
-        await tg_post_jobs_ac();
+        await tg_post_predoc();
       }, { timezone: "Africa/Lagos" });
     } else if (time === '30 10 * * *') {
       cron.schedule(time, async () => {
@@ -69,8 +71,8 @@ let post_schedules = ['0 4 * * *', '50 6 * * *', '15 7 * * *', '32 7 * * *',
       }, { timezone: "Africa/Lagos" });
     }  else {
       cron.schedule(time, async () => {
-        console.log('executing predoc fn..');
-        await tg_post_predoc();
+        console.log('executing academy fn..');
+        await tg_post_academy();
       }, { timezone: "Africa/Lagos" });
     }
 
