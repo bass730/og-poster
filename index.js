@@ -51,7 +51,7 @@ let post_schedules = ['0 4 * * *', '50 6 * * *', '15 7 * * *', '32 7 * * *',
       }, { timezone: "Africa/Lagos" });
     } else if (time === '52 7 * * *') {
       cron.schedule(time, async () => {
-        console.log('executing jobs_ac fn..');
+        console.log('executing predoc fn..');
         let pr = await tg_post_predoc();
         if(pr==null) {
           console.log('executing academy fn..');
