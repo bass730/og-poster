@@ -4,7 +4,7 @@ require("dotenv").config();
 async function tg_post_predoc () {
 
 const { Telegraf } = require("telegraf");
-const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOldDocumentsFromDb, deleteIfPostedPredocCollectionHasReachedCountThreshold, deleteAllPostedJobsFromDbNow, addDocumentToPostedDb } = require('./predoc-db-posts.js');
+const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOldDocumentsFromDb, deleteIfPostedPredocCollectionHasReachedCountThreshold, deleteAllPostedJobsFromDbNow, addDocumentToPostedDb, deleteScholarshipByAppLink } = require('./predoc-db-posts.js');
 
     try {
 
@@ -25,13 +25,15 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
                     if (scholarshipObj == null) {
                         await deleteAllPostedJobsFromDbNow();
                         scholarshipObj = await findRandomUnpostedDocument();
+                        if(scholarshipObj == null) {
+                            await closeDatabase();
+                            return null
+                        }
                     }
 
 
                     //limit 400 characters if length>400; remove employer
-                    post = `<b>FULLY FUNDED GRADUATE POSITION</b>\n\n<b>${scholarshipObj.
-                        body}</b>\n\n🔰 <b>Deadline:</b> ${scholarshipObj.
-                       deadline}\n\n${scholarshipObj.app_link}`
+                    post = `<b>AVAILABLE GRADUATE SCHOLARSHIP</b>\n\n<b>${scholarshipObj.body}</b>\n\n🔰 <b>Deadline:</b>${scholarshipObj.deadline}\n\n${scholarshipObj.app_link}`
 
                     await bot.telegram.sendMessage(TELEGRAM_CHANNEL_ID, post, {
                       parse_mode: "HTML",
@@ -39,9 +41,17 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
                      }); post = null;
 
                     console.log('post sent successfully!');
-                    await addDocumentToPostedDb(scholarshipObj);
-                    //console.log(post)
-                    console.log('post added to posted-tg-jobs db..');
+
+                    if (scholarshipObj.deadline == "Rolling") {
+                        //delete from db (both collections)
+                        let result = await deleteScholarshipByAppLink(scholarshipObj.app_link);
+                        if (result) console.log(result);
+
+                    } else {
+                        await addDocumentToPostedDb(scholarshipObj);
+                        console.log('post added to posted-tg-jobs db..');
+                    }
+
 
                 } catch (error) {
                       console.error(error.message);
@@ -49,7 +59,7 @@ const { initializeDatabase, closeDatabase, findRandomUnpostedDocument, removeOld
 
 
     await closeDatabase();
-    return;
+    return "post sent!";
 
     } catch (error) {
         console.error("possible API error:", error.message);

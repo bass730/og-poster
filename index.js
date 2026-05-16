@@ -52,7 +52,11 @@ let post_schedules = ['0 4 * * *', '50 6 * * *', '15 7 * * *', '32 7 * * *',
     } else if (time === '52 7 * * *') {
       cron.schedule(time, async () => {
         console.log('executing jobs_ac fn..');
-        await tg_post_predoc();
+        let pr = await tg_post_predoc();
+        if(pr==null) {
+          console.log('executing academy fn..');
+          await tg_post_academy();
+        }
       }, { timezone: "Africa/Lagos" });
     } else if (time === '30 10 * * *') {
       cron.schedule(time, async () => {

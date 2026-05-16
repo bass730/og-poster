@@ -368,6 +368,48 @@ async function addDocumentToPostedDb(postDocument) {
   }
 };
 
+/**
+ * Deletes a scholarship document from both collections by app_link
+ * @param {string} appLink - The application link of the scholarship to delete
+ * @returns {Promise<{success: boolean, deletedFromPredoc: number, deletedFromPosted: number}>}
+ */
+async function deleteScholarshipByAppLink(appLink) {
+  try {
+    if (!appLink) {
+      console.error("❌ Invalid appLink provided");
+      return { success: false, deletedFromPredoc: 0, deletedFromPosted: 0 };
+    }
+
+    const predocCollection = db.collection("predoc-scholarships");
+    const postedCollection = db.collection("predoc-posted-scholarships");
+
+    // Delete from both collections by app_link
+    const [predocResult, postedResult] = await Promise.all([
+      predocCollection.deleteOne(
+        { app_link: appLink },
+        { writeConcern: { w: 1, j: false } }
+      ),
+      postedCollection.deleteOne(
+        { app_link: appLink },
+        { writeConcern: { w: 1, j: false } }
+      )
+    ]);
+
+    console.log(`✅ Deleted from predoc-scholarships: ${predocResult.deletedCount} document(s)`);
+    console.log(`✅ Deleted from predoc-posted-scholarships: ${postedResult.deletedCount} document(s)`);
+
+    return {
+      success: predocResult.deletedCount > 0 || postedResult.deletedCount > 0,
+      deletedFromPredoc: predocResult.deletedCount,
+      deletedFromPosted: postedResult.deletedCount
+    };
+
+  } catch (error) {
+    console.error("⛔ Error deleting scholarship by appLink:", error.message);
+    return { success: false, deletedFromPredoc: 0, deletedFromPosted: 0 };
+  }
+};
+
 module.exports = {
   initializeDatabase,
   closeDatabase,
@@ -375,5 +417,6 @@ module.exports = {
   deleteIfPostedPredocCollectionHasReachedCountThreshold,
   deleteAllPostedJobsFromDbNow,
   findRandomUnpostedDocument,
-  addDocumentToPostedDb
+  addDocumentToPostedDb,
+  deleteScholarshipByAppLink
 };
